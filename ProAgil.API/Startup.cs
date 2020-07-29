@@ -28,6 +28,7 @@ namespace ProAgil.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddCors();
             services.AddControllers();
         }
 
@@ -45,6 +46,8 @@ namespace ProAgil.API
 
             app.UseAuthorization();
 
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
