@@ -1,0 +1,9 @@
+.btn-transparent{
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.icon-light {
+  color: white;
+}

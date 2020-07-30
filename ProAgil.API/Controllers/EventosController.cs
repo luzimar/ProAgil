@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using ProAgil.API.Data;
-using ProAgil.API.Models;
+using ProAgil.Domain.Models;
+using ProAgil.Repository.Interfaces;
 
 namespace ProAgil.API.Controllers
 {
@@ -15,27 +10,62 @@ namespace ProAgil.API.Controllers
     [Route("api/[controller]")]
     public class EventosController : ControllerBase
     {
-        private readonly ILogger<EventosController> _logger;
-        private readonly DataContext _context;
-
-        public EventosController(ILogger<EventosController> logger, DataContext context)
+        private readonly IEventosRepository _eventosRepository;
+        public EventosController(IEventosRepository eventosRepository)
         {
-            _logger = logger;
-            _context = context;
+            _eventosRepository = eventosRepository;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(Evento evento){
          try
          {
-            await _context.Eventos.AddAsync(evento);
-            await _context.SaveChangesAsync();
-            return Ok("Evento criado com sucesso!");
+            await _eventosRepository.Add(evento);
+            if(await _eventosRepository.SaveChanges())
+              return Created($"/api/eventos/{evento.Id}", evento);
          }
          catch (System.Exception)
          {
             return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
          }
+         return BadRequest();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(Evento evento){
+         try
+         {
+
+            var eventoEncontrado = await _eventosRepository.ObterEventoPorId(evento.Id);
+            if(eventoEncontrado == null) return NotFound();
+
+            _eventosRepository.Update(evento);
+            if(await _eventosRepository.SaveChanges())
+              return Created($"/api/eventos/{evento.Id}", evento);
+         }
+         catch (System.Exception)
+         {
+            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
+         }
+         return BadRequest();
+        }
+
+        [HttpDelete("{eventoId}")]
+        public async Task<IActionResult> Delete(int eventoId){
+         try
+         {
+            var eventoEncontrado = await _eventosRepository.ObterEventoPorId(eventoId);
+            if(eventoEncontrado == null) return NotFound();
+
+            _eventosRepository.Delete(eventoEncontrado);
+            if(await _eventosRepository.SaveChanges())
+              return Ok();
+         }
+         catch (System.Exception)
+         {
+            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
+         }
+         return BadRequest();
         }
 
         [HttpGet]
@@ -43,7 +73,7 @@ namespace ProAgil.API.Controllers
         {
           try
           {
-            var eventos = await _context.Eventos.ToListAsync();
+            var eventos = await _eventosRepository.ObterEventos(true);
             return Ok(eventos);
           }
           catch (System.Exception)
@@ -52,12 +82,26 @@ namespace ProAgil.API.Controllers
           }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("{eventoId}")]
+        public async Task<IActionResult> Get(int eventoId)
         {
           try
           {
-            var evento = await _context.Eventos.FirstOrDefaultAsync(x => x.EventoId == id);
+            var evento = await _eventosRepository.ObterEventoPorId(eventoId, true);
+            return Ok(evento);
+          }
+          catch (System.Exception)
+          {
+            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
+          }
+        }
+
+        [HttpGet("obterPorTema/{tema}")]
+        public async Task<IActionResult> Get(string tema)
+        {
+          try
+          {
+            var evento = await _eventosRepository.ObterEventosPorTema(tema, true);
             return Ok(evento);
           }
           catch (System.Exception)
