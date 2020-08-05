@@ -3,12 +3,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ProAgil.Repository.Context;
-using ProAgil.Repository.Interfaces;
+using ProAgil.Domain.Core.Interfaces;
+using ProAgil.Domain.Core.Models;
+using ProAgil.Infra.Data.Context;
 
-namespace ProAgil.Repository.Implementations
+namespace ProAgil.Infra.Data.Implementations
 {
-  public abstract class Repository<T> : IRepository<T> where T : class
+  public abstract class Repository<T> : IRepository<T> where T : Entity
   {
     protected readonly ProAgilContext _context;
 

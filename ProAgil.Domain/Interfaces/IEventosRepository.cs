@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
+using ProAgil.Domain.Core.Interfaces;
 using ProAgil.Domain.Models;
 
-namespace ProAgil.Repository.Interfaces
+namespace ProAgil.Domain.Interfaces
 {
     public interface IEventosRepository : IRepository<Evento>
     {

@@ -1,10 +1,10 @@
+using ProAgil.Domain.Core.Models;
 using System;
 
 namespace ProAgil.Domain.Models
 {
-    public class Lote
+    public class Lote : Entity
     {
-        public int Id { get; set; }
         public string Nome { get; set; }
         public decimal Preco { get; set; }
         public DateTime? DataInicio { get; set; }

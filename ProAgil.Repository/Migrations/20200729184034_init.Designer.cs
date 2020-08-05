@@ -3,9 +3,9 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using ProAgil.Repository.Context;
+using ProAgil.Infra.Data.Context;
 
-namespace ProAgil.Repository.Migrations
+namespace ProAgil.Infra.Data.Migrations
 {
     [DbContext(typeof(ProAgilContext))]
     [Migration("20200729184034_init")]

@@ -1,11 +1,11 @@
+using ProAgil.Domain.Core.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace ProAgil.Repository.Interfaces
+namespace ProAgil.Domain.Core.Interfaces
 {
-    public interface IRepository<T> where T: class
+    public interface IRepository<T> where T: Entity
     {
          Task Add(T entity);
          void Update(T entity);

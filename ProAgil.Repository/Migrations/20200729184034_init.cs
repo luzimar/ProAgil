@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ProAgil.Repository.Migrations
+namespace ProAgil.Infra.Data.Migrations
 {
     public partial class init : Migration
     {

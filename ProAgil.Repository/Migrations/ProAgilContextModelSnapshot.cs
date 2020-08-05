@@ -2,9 +2,10 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using ProAgil.Repository.Context;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using ProAgil.Infra.Data.Context;
 
-namespace ProAgil.Repository.Migrations
+namespace ProAgil.Infra.Data.Migrations
 {
     [DbContext(typeof(ProAgilContext))]
     partial class ProAgilContextModelSnapshot : ModelSnapshot
@@ -24,17 +25,11 @@ namespace ProAgil.Repository.Migrations
                     b.Property<DateTime>("DataEvento")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ImagemUrl")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Local")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("QtdPessoas")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Telefone")
                         .HasColumnType("TEXT");
@@ -84,9 +79,6 @@ namespace ProAgil.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ImagemUrl")
                         .HasColumnType("TEXT");
 
@@ -110,6 +102,9 @@ namespace ProAgil.Repository.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PalestranteId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Id")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("EventoId", "PalestranteId");
@@ -146,13 +141,70 @@ namespace ProAgil.Repository.Migrations
                     b.ToTable("RedesSocials");
                 });
 
+            modelBuilder.Entity("ProAgil.Domain.Models.Evento", b =>
+                {
+                    b.OwnsOne("ProAgil.Domain.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<int>("EventoId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Address")
+                                .HasColumnName("Email")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("EventoId");
+
+                            b1.ToTable("Eventos");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EventoId");
+                        });
+
+                    b.OwnsOne("ProAgil.Domain.ValueObjects.QuantidadePessoas", "QtdPessoas", b1 =>
+                        {
+                            b1.Property<int>("EventoId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("Quantidade")
+                                .HasColumnName("QtdPessoas")
+                                .HasColumnType("INTEGER");
+
+                            b1.HasKey("EventoId");
+
+                            b1.ToTable("Eventos");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EventoId");
+                        });
+                });
+
             modelBuilder.Entity("ProAgil.Domain.Models.Lote", b =>
                 {
-                    b.HasOne("ProAgil.Domain.Models.Evento", "Evento")
+                    b.HasOne("ProAgil.Domain.Models.Evento", null)
                         .WithMany("Lotes")
                         .HasForeignKey("EventoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ProAgil.Domain.Models.Palestrante", b =>
+                {
+                    b.OwnsOne("ProAgil.Domain.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<int>("PalestranteId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Address")
+                                .HasColumnName("Email")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("PalestranteId");
+
+                            b1.ToTable("Palestrantes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PalestranteId");
+                        });
                 });
 
             modelBuilder.Entity("ProAgil.Domain.Models.PalestranteEvento", b =>
@@ -172,11 +224,11 @@ namespace ProAgil.Repository.Migrations
 
             modelBuilder.Entity("ProAgil.Domain.Models.RedeSocial", b =>
                 {
-                    b.HasOne("ProAgil.Domain.Models.Evento", "Evento")
+                    b.HasOne("ProAgil.Domain.Models.Evento", null)
                         .WithMany("RedesSociais")
                         .HasForeignKey("EventoId");
 
-                    b.HasOne("ProAgil.Domain.Models.Palestrante", "Palestrante")
+                    b.HasOne("ProAgil.Domain.Models.Palestrante", null)
                         .WithMany("RedesSociais")
                         .HasForeignKey("PalestranteId");
                 });

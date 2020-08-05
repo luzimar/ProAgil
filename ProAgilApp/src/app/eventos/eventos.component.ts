@@ -1,8 +1,14 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Evento } from '../models/Evento';
 import { EventoService } from '../services/evento.service';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { FormGroup, FormControl } from '@angular/forms';
+import { defineLocale } from 'ngx-bootstrap/chronos';
+import { ptBrLocale  } from 'ngx-bootstrap/locale';
+import { BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { formatErrorResponse } from '../utils/Functions';
+
+defineLocale('pt-br', ptBrLocale);
 
 @Component({
   selector: 'app-eventos',
@@ -11,13 +17,18 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class EventosComponent implements OnInit {
 
+  titulo = 'Eventos';
   eventos: Evento[] = [];
+  evento: Evento = {} as Evento;
   eventosFiltrados: Evento[] = [];
   imagemLargura = 50;
   imagemMargem = 2;
   mostrarImagem = false;
-  modalRef: BsModalRef;
   registerForm: FormGroup;
+  operacao: string;
+  loading = false;
+  bodyExcluirEvento = '';
+  dataEvento = '';
 
   // tslint:disable-next-line:variable-name
   _filtroLista: string;
@@ -30,44 +41,116 @@ export class EventosComponent implements OnInit {
   }
 
   constructor(private eventoService: EventoService,
-              private modalService: BsModalService) { }
+              private formBuilder: FormBuilder,
+              private localeService: BsLocaleService,
+              private toastService: ToastrService) {
+      this.localeService.use('pt-br');
+    }
 
-  openModal(template: TemplateRef<any>): void {
-     this.modalRef = this.modalService.show(template);
-  }
+    openModal(template: any): void {
+      this.registerForm.reset();
+      template.show();
+    }
 
-  ngOnInit(): void {
-    this.obterEventos();
-  }
+    abrirFormularioCadastro(template: any): void {
+      this.operacao = 'cadastro';
+      this.openModal(template);
+    }
 
-  filtrarEventos(filtrarPor: string): Evento[] {
-    filtrarPor = filtrarPor.toLocaleLowerCase();
-    return this.eventos.filter(evento => evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1);
-  }
-  alternarImagem(): void {
-    this.mostrarImagem = !this.mostrarImagem;
-  }
+    abrirFormularioEdicao(template: any, evento: Evento): void {
+        this.operacao = 'edicao';
+        this.openModal(template);
+        this.evento = evento;
+        this.dataEvento = this.evento.dataEvento;
+        this.registerForm.patchValue(evento);
+      }
 
-  validation(): void {
-      this.registerForm = new FormGroup({
-        tema: new FormControl(),
-        local: new FormControl(),
-        dataEvento: new FormControl(),
-        qtdPessoas: new FormControl(),
-        telefone: new FormControl(),
-        email: new FormControl()
-      });
-  }
+      ngOnInit(): void {
+        this.validation();
+        this.obterEventos();
+      }
 
-  salvarAlteracao(): void {
+      filtrarEventos(filtrarPor: string): Evento[] {
+        filtrarPor = filtrarPor.toLocaleLowerCase();
+        return this.eventos.filter(evento => evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1);
+      }
+      alternarImagem(): void {
+        this.mostrarImagem = !this.mostrarImagem;
+      }
 
-  }
+      validation(): void {
+        this.registerForm = this.formBuilder.group({
+          tema: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+          local: ['', Validators.required],
+          dataEvento: ['', Validators.required],
+          imagemUrl: ['', Validators.required],
+          qtdPessoas: ['', [Validators.required, Validators.max(120000)]],
+          telefone: ['', Validators.required],
+          email: ['', [Validators.required, Validators.email]]
+        });
+      }
 
-  obterEventos(): void {
-    // tslint:disable-next-line:variable-name
-    this.eventoService.obterEventos().subscribe((_eventos: Evento[]) => {
-    this.eventos = _eventos;
-    this.eventosFiltrados = this.eventos;
-  }, error => console.log(error));
-}
-}
+      salvarAlteracao(template: any): void {
+        if (this.registerForm.valid) {
+          this.operacao === 'edicao' ? this.editarEvento(template) : this.cadastrarEvento(template);
+        }
+      }
+      cadastrarEvento(template: any): void {
+        this.evento = Object.assign({}, this.registerForm.value);
+        this.eventoService.cadastrarEvento(this.evento).subscribe((response) => {
+            template.hide();
+            this.obterEventos();
+            this.toastService.success(response.messages[0]);
+          }, errorResponse => {
+            this.getErrorResponse(errorResponse);
+          }
+          );
+        }
+        editarEvento(template: any): void {
+          this.evento = Object.assign({id: this.evento.id}, this.registerForm.value);
+          this.eventoService.editarEvento(this.evento).subscribe((response) => {
+              template.hide();
+              this.obterEventos();
+              this.toastService.success(response.messages[0]);
+            }, errorResponse => {
+              this.getErrorResponse(errorResponse);
+            }
+            );
+        }
+        excluirEvento(evento: Evento, template: any): void {
+          this.openModal(template);
+          this.evento = evento;
+          this.bodyExcluirEvento = `Tem certeza que deseja excluir o Evento: ${evento.tema}, Código: ${evento.id}`;
+        }
+        confirmarExclusao(template: any): void {
+          this.eventoService.excluirEvento(this.evento.id).subscribe((response) => {
+            template.hide();
+            this.obterEventos();
+            this.toastService.success(response.messages[0]);
+          }, errorResponse => {
+            this.getErrorResponse(errorResponse);
+          }
+          );
+        }
+
+        obterEventos(): void {
+            this.loading = true;
+            // tslint:disable-next-line:variable-name
+            this.eventoService.obterEventos().subscribe((_eventos: Evento[]) => {
+              this.eventos = _eventos;
+              this.eventosFiltrados = this.eventos;
+              this.loading = false;
+            }, error => {
+              console.log(error);
+              this.loading = false;
+            });
+        }
+
+        getErrorResponse(errorResponse: any): void {
+            const message = formatErrorResponse(errorResponse);
+            this.toastService.error(message, null, {
+                closeButton: true,
+                disableTimeOut: true,
+              });
+        }
+        }

@@ -1,11 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ProAgil.Domain.Interfaces;
 using ProAgil.Domain.Models;
-using ProAgil.Repository.Context;
-using ProAgil.Repository.Interfaces;
+using ProAgil.Infra.Data.Context;
 
-namespace ProAgil.Repository.Implementations
+namespace ProAgil.Infra.Data.Implementations
 {
   public class PalestrantesRepository : Repository<Palestrante>, IPalestrantesRepository
   {

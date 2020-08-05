@@ -1,113 +1,111 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ProAgil.Domain.Models;
-using ProAgil.Repository.Interfaces;
+using ProAgil.API.Controllers.Base;
+using ProAgil.Application.Interfaces;
+using ProAgil.Application.ViewModels;
 
 namespace ProAgil.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EventosController : ControllerBase
+    public class EventosController : BaseController
     {
-        private readonly IEventosRepository _eventosRepository;
-        public EventosController(IEventosRepository eventosRepository)
+        private readonly IEventoService _service;
+        public EventosController(IEventoService service)
         {
-            _eventosRepository = eventosRepository;
+            _service = service;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Evento evento){
-         try
-         {
-            await _eventosRepository.Add(evento);
-            if(await _eventosRepository.SaveChanges())
-              return Created($"/api/eventos/{evento.Id}", evento);
-         }
-         catch (System.Exception)
-         {
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
-         }
-         return BadRequest();
+        public async Task<IActionResult> Post(EventoViewModel evento)
+        {
+            try
+            {
+                var response = await _service.CriarEvento(evento);
+                return GetResponse(response);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("criar evento"));
+            }
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Evento evento){
-         try
-         {
+        public async Task<IActionResult> Put(EventoViewModel evento)
+        {
+            try
+            {
+                var eventoEncontrado = await _service.ObterEventoPorId(evento.Id, true);
+                if (eventoEncontrado == null) return NotFound();
 
-            var eventoEncontrado = await _eventosRepository.ObterEventoPorId(evento.Id);
-            if(eventoEncontrado == null) return NotFound();
-
-            _eventosRepository.Update(evento);
-            if(await _eventosRepository.SaveChanges())
-              return Created($"/api/eventos/{evento.Id}", evento);
-         }
-         catch (System.Exception)
-         {
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
-         }
-         return BadRequest();
+                var response = await _service.EditarEvento(evento);
+                 return GetResponse(response);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("editar evento"));
+            }
         }
 
         [HttpDelete("{eventoId}")]
-        public async Task<IActionResult> Delete(int eventoId){
-         try
-         {
-            var eventoEncontrado = await _eventosRepository.ObterEventoPorId(eventoId);
-            if(eventoEncontrado == null) return NotFound();
+        public async Task<IActionResult> Delete(int eventoId)
+        {
+            try
+            {
+                var eventoEncontrado = await _service.ObterEventoPorId(eventoId, true);
+                if (eventoEncontrado == null) return NotFound();
 
-            _eventosRepository.Delete(eventoEncontrado);
-            if(await _eventosRepository.SaveChanges())
-              return Ok();
-         }
-         catch (System.Exception)
-         {
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
-         }
-         return BadRequest();
+                var response = await _service.ExcluirEvento(eventoEncontrado.Evento);
+                return GetResponse(response);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("excluir evento"));
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-          try
-          {
-            var eventos = await _eventosRepository.ObterEventos(true);
-            return Ok(eventos);
-          }
-          catch (System.Exception)
-          {
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
-          }
+            try
+            {
+                var response = await _service.ObterEventos(true);
+                return Ok(response.Eventos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("listar eventos"));
+            }
         }
 
         [HttpGet("{eventoId}")]
         public async Task<IActionResult> Get(int eventoId)
         {
-          try
-          {
-            var evento = await _eventosRepository.ObterEventoPorId(eventoId, true);
-            return Ok(evento);
-          }
-          catch (System.Exception)
-          {
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
-          }
+            try
+            {
+                var response = await _service.ObterEventoPorId(eventoId, true);
+                return Ok(response.Evento);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("buscar evento"));
+            }
         }
 
         [HttpGet("obterPorTema/{tema}")]
         public async Task<IActionResult> Get(string tema)
         {
-          try
-          {
-            var evento = await _eventosRepository.ObterEventosPorTema(tema, true);
-            return Ok(evento);
-          }
-          catch (System.Exception)
-          {
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha ao conectar ao banco");
-          }
+            try
+            {
+                var response = await _service.ObterEventosPorTema(tema, true);
+                return Ok(response.Eventos);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("buscar evento"));
+            }
         }
     }
 }
