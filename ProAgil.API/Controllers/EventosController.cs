@@ -74,7 +74,7 @@ namespace ProAgil.API.Controllers
                 var response = await _service.ObterEventos(true);
                 return Ok(response.Eventos);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("listar eventos"));
             }
