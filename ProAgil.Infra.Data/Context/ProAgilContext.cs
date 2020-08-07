@@ -1,12 +1,15 @@
 using Flunt.Notifications;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ProAgil.Domain.Identity;
 using ProAgil.Domain.Models;
 
 namespace ProAgil.Infra.Data.Context
 {
-    public class ProAgilContext : DbContext
+    public class ProAgilContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
-        public ProAgilContext(DbContextOptions<ProAgilContext> options):base(options)
+        public ProAgilContext(DbContextOptions<ProAgilContext> options) : base(options)
         { }
 
         public DbSet<Evento> Eventos { get; set; }
@@ -17,8 +20,27 @@ namespace ProAgil.Infra.Data.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           modelBuilder.Entity<PalestranteEvento>()
-                       .HasKey(PE => new { PE.EventoId, PE.PalestranteId });
+
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserRole>(userRole =>
+            {
+                userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
+
+                userRole.HasOne(ur => ur.Role)
+                        .WithMany(r => r.UserRoles)
+                        .HasForeignKey(ur => ur.RoleId)
+                        .IsRequired();
+
+                userRole.HasOne(ur => ur.User)
+                        .WithMany(r => r.UserRoles)
+                        .HasForeignKey(ur => ur.UserId)
+                        .IsRequired();
+
+            });
+
+            modelBuilder.Entity<PalestranteEvento>()
+                        .HasKey(PE => new { PE.EventoId, PE.PalestranteId });
 
             modelBuilder.Entity<Evento>().OwnsOne(p => p.QtdPessoas)
                                           .Property(p => p.Quantidade).HasColumnName("QtdPessoas");

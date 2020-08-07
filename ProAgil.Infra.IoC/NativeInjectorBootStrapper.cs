@@ -7,7 +7,7 @@ using ProAgil.Domain.Commands.Eventos;
 using ProAgil.Domain.Interfaces;
 using ProAgil.Infra.Data.Implementations;
 
-namespace ProAgil.IoC
+namespace ProAgil.Infra.IoC
 {
     public static class NativeInjectorBootStrapper
     {

@@ -5,13 +5,15 @@
   <ItemGroup>
     <PackageReference Include="MediatR" Version="8.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProAgil.Application\ProAgil.Application.csproj" />
     <ProjectReference Include="..\ProAgil.Domain\ProAgil.Domain.csproj" />
-    <ProjectReference Include="..\ProAgil.IoC\ProAgil.Infra.IoC.csproj" />
-    <ProjectReference Include="..\ProAgil.Repository\ProAgil.Infra.Data.csproj" />
+    <ProjectReference Include="..\ProAgil.Infra.IoC\ProAgil.Infra.IoC.csproj" />
+    <ProjectReference Include="..\ProAgil.Infra.Data\ProAgil.Infra.Data.csproj" />
   </ItemGroup>
 </Project>

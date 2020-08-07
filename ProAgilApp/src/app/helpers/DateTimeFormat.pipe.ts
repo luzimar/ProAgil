@@ -7,8 +7,18 @@ import { Constants } from '../utils/Constants';
 })
 export class DateTimeFormatPipe extends DatePipe implements PipeTransform {
 
-  transform(value: any, args?: any): any {
-    return super.transform(value, Constants.DATE_TIME_FMT);
+  transform(value: Date, args?: any): any {
+    try{
+      const formattedMonth = value.getMonth() < 12 ? value.getMonth() + 1 : value.getMonth();
+      const day = value.getDate() < 10 ? '0' + value.getDate() : value.getDate();
+      const month = value.getMonth() < 10 ? '0' + formattedMonth : formattedMonth;
+      const year = value.getFullYear();
+      const hour = value.getHours() < 10 ? '0' + value.getHours() : value.getHours();
+      const minutes = value.getMinutes() < 10 ? '0' + value.getMinutes() : value.getMinutes();
+      return `${day}/${month}/${year} ${hour}:${minutes}`;
+    } catch {
+      return value.toString();
+    }
   }
 
 }

@@ -28,10 +28,14 @@ export class EventosComponent implements OnInit {
   operacao: string;
   loading = false;
   bodyExcluirEvento = '';
-  dataEvento = '';
+  dataEvento: any;
+  file: File;
+  fileNameToUpdate: string;
+  dataAtual: string;
 
   // tslint:disable-next-line:variable-name
   _filtroLista: string;
+
   get filtroLista(): string{
     return this._filtroLista;
   }
@@ -57,12 +61,18 @@ export class EventosComponent implements OnInit {
       this.openModal(template);
     }
 
+    dataChange(event: any): void {
+       console.log(event);
+    }
+
     abrirFormularioEdicao(template: any, evento: Evento): void {
         this.operacao = 'edicao';
         this.openModal(template);
-        this.evento = evento;
+        this.evento = Object.assign({}, evento);
+        this.fileNameToUpdate = evento.imagemUrl.toString();
+        this.evento.imagemUrl = '';
         this.dataEvento = this.evento.dataEvento;
-        this.registerForm.patchValue(evento);
+        this.registerForm.patchValue(this.evento);
       }
 
       ngOnInit(): void {
@@ -89,7 +99,11 @@ export class EventosComponent implements OnInit {
           email: ['', [Validators.required, Validators.email]]
         });
       }
-
+      onFileChange(event: any): void {
+        if (event.target.files && event.target.files.length){
+           this.file = event.target.files;
+        }
+      }
       salvarAlteracao(template: any): void {
         if (this.registerForm.valid) {
           this.operacao === 'edicao' ? this.editarEvento(template) : this.cadastrarEvento(template);
@@ -97,6 +111,7 @@ export class EventosComponent implements OnInit {
       }
       cadastrarEvento(template: any): void {
         this.evento = Object.assign({}, this.registerForm.value);
+        this.uploadImagem();
         this.eventoService.cadastrarEvento(this.evento).subscribe((response) => {
             template.hide();
             this.obterEventos();
@@ -108,6 +123,7 @@ export class EventosComponent implements OnInit {
         }
         editarEvento(template: any): void {
           this.evento = Object.assign({id: this.evento.id}, this.registerForm.value);
+          this.uploadImagem();
           this.eventoService.editarEvento(this.evento).subscribe((response) => {
               template.hide();
               this.obterEventos();
@@ -131,6 +147,24 @@ export class EventosComponent implements OnInit {
             this.getErrorResponse(errorResponse);
           }
           );
+        }
+
+        uploadImagem(): void {
+          if (this.operacao === 'cadastro')
+          {
+            const nomeArquivo = this.evento.imagemUrl.split('\\', 3);
+            this.evento.imagemUrl = nomeArquivo[2];
+            this.eventoService.efetuarUpload(this.file, nomeArquivo[2]).subscribe(() => {
+              this.dataAtual = new Date().getMilliseconds().toString();
+              this.obterEventos();
+            });
+          }else{
+            this.evento.imagemUrl = this.fileNameToUpdate;
+            this.eventoService.efetuarUpload(this.file, this.fileNameToUpdate).subscribe(() => {
+              this.dataAtual = new Date().getMilliseconds().toString();
+              this.obterEventos();
+            });
+          }
         }
 
         obterEventos(): void {

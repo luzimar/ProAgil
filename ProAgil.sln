@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProAgil.API", "ProAgil.API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProAgil.Domain", "ProAgil.Domain\ProAgil.Domain.csproj", "{F52352AE-3032-4ACD-B0E6-E171434BE9FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProAgil.Infra.Data", "ProAgil.Repository\ProAgil.Infra.Data.csproj", "{DC4DD297-98BD-4279-83CB-A9ACCA3773AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProAgil.Infra.Data", "ProAgil.Infra.Data\ProAgil.Infra.Data.csproj", "{DC4DD297-98BD-4279-83CB-A9ACCA3773AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProAgil.Test", "ProAgil.Test\ProAgil.Test.csproj", "{2AAB7257-F2A4-49CF-9D2C-6E91901703CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProAgil.Application", "ProAgil.Application\ProAgil.Application.csproj", "{2A409C27-5E81-4587-87A7-0BA863A3032B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAgil.Infra.IoC", "ProAgil.IoC\ProAgil.Infra.IoC.csproj", "{A6612831-3B6E-4939-AF40-C8CBAA68D584}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAgil.Infra.IoC", "ProAgil.Infra.IoC\ProAgil.Infra.IoC.csproj", "{A6612831-3B6E-4939-AF40-C8CBAA68D584}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAgil.Domain.Core", "ProAgil.Domain.Core\ProAgil.Domain.Core.csproj", "{AB725E6F-A158-4872-968C-F1074AB150C0}"
 EndProject

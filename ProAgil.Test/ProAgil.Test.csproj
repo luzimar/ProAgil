@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProAgil.Repository\ProAgil.Infra.Data.csproj" />
+    <ProjectReference Include="..\ProAgil.Infra.Data\ProAgil.Infra.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

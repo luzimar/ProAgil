@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProAgil.Domain\ProAgil.Domain.csproj" />
-    <ProjectReference Include="..\ProAgil.Repository\ProAgil.Infra.Data.csproj" />
+    <ProjectReference Include="..\ProAgil.Infra.Data\ProAgil.Infra.Data.csproj" />
   </ItemGroup>
 
 </Project>

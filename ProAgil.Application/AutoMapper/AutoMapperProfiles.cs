@@ -4,6 +4,7 @@ using ProAgil.Application.ViewModels;
 using ProAgil.Domain.Commands;
 using ProAgil.Domain.Commands.Eventos;
 using ProAgil.Domain.Commands.Palestrantes;
+using ProAgil.Domain.Identity;
 using ProAgil.Domain.Models;
 using ProAgil.Domain.Response;
 using ProAgil.Domain.ValueObjects;
@@ -44,6 +45,9 @@ namespace ProAgil.Application.AutoMapper
 
             CreateMap<Lote, LoteViewModel>().ReverseMap();
             CreateMap<RedeSocial, RedeSocialViewModel>().ReverseMap();
+
+            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<User, UserLoginViewModel>().ReverseMap();
         }
     }
 }
