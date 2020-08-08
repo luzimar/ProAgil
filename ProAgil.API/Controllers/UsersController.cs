@@ -37,13 +37,13 @@ namespace ProAgil.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("GetUser")]
+        [HttpGet("getUser")]
         public async Task<IActionResult> Get(UserViewModel userViewModel)
         {
             return Ok(userViewModel);
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Post(UserViewModel userViewModel)
         {
@@ -65,7 +65,7 @@ namespace ProAgil.API.Controllers
             }
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(UserLoginViewModel userLoginViewModel)
         {

@@ -61,10 +61,6 @@ export class EventosComponent implements OnInit {
       this.openModal(template);
     }
 
-    dataChange(event: any): void {
-       console.log(event);
-    }
-
     abrirFormularioEdicao(template: any, evento: Evento): void {
         this.operacao = 'edicao';
         this.openModal(template);
@@ -175,7 +171,7 @@ export class EventosComponent implements OnInit {
               this.eventosFiltrados = this.eventos;
               this.loading = false;
             }, error => {
-              console.log(error);
+              this.toastService.error('Erro ao carregar eventos!');
               this.loading = false;
             });
         }

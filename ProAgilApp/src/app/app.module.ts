@@ -1,8 +1,8 @@
 // Modulos
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-import {  FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -10,6 +10,8 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { ToastrModule } from 'ngx-toastr';
+import { JwtModule } from '@auth0/angular-jwt';
+import { AuthInterceptor } from './auth/auth.interceptor';
 
 // Components
 import { AppComponent } from './app.component';
@@ -19,9 +21,14 @@ import { PalestrantesComponent } from './palestrantes/palestrantes.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ContatosComponent } from './contatos/contatos.component';
 import { TituloComponent } from './shared/titulo/titulo.component';
+import { UsersComponent } from './users/users.component';
+import { LoginComponent } from './users/login/login.component';
+import { RegistrationComponent } from './users/registration/registration.component';
 
 // Pipes
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
+import { EventoService } from './services/evento.service';
+
 
 @NgModule({
    declarations: [
@@ -32,7 +39,10 @@ import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
       DashboardComponent,
       ContatosComponent,
       TituloComponent,
-      DateTimeFormatPipe
+      DateTimeFormatPipe,
+      UsersComponent,
+      LoginComponent,
+      RegistrationComponent
    ],
    imports: [
       BrowserModule,
@@ -43,17 +53,31 @@ import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
       BsDatepickerModule.forRoot(),
       ToastrModule.forRoot({
         timeOut: 3000,
-        progressBar: true,
         preventDuplicates: true,
+        progressBar: true
       }),
       AppRoutingModule,
       HttpClientModule,
       FormsModule,
-      ReactiveFormsModule
+      ReactiveFormsModule,
+      JwtModule.forRoot({
+        config: {
+          tokenGetter: () => '',
+        }
+      })
    ],
-   providers: [],
+   providers: [
+     EventoService,
+     {
+       provide: HTTP_INTERCEPTORS,
+       useClass: AuthInterceptor,
+       multi: true
+     }
+   ],
    bootstrap: [
       AppComponent
    ]
 })
+
+
 export class AppModule { }
