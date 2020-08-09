@@ -31,4 +31,8 @@ export class NavComponent implements OnInit {
   getUsername(): string {
     return sessionStorage.getItem('username');
   }
+
+  showMenu(): boolean {
+    return this.router.url !== '/users/login';
+  }
 }
