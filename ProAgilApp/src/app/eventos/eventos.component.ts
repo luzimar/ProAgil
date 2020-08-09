@@ -97,7 +97,7 @@ export class EventosComponent implements OnInit {
       }
       onFileChange(event: any): void {
         if (event.target.files && event.target.files.length){
-           this.file = event.target.files;
+           this.file = event.target.files[0];
         }
       }
       salvarAlteracao(template: any): void {
@@ -164,6 +164,7 @@ export class EventosComponent implements OnInit {
         }
 
         obterEventos(): void {
+            this.dataAtual = new Date().getMilliseconds().toString();
             this.loading = true;
             // tslint:disable-next-line:variable-name
             this.eventoService.obterEventos().subscribe((_eventos: Evento[]) => {

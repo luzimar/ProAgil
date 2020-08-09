@@ -30,6 +30,10 @@ namespace ProAgil.Infra.Data.Implementations
     {
        _context.Set<T>().Remove(entity);
     }
+    public void DeleteRange(T[] entity)
+    {
+       _context.Set<T>().RemoveRange(entity);
+    }
     public async Task<T[]> Get()
     {
       return await _context.Set<T>().ToArrayAsync();

@@ -39,7 +39,7 @@ export class EventoService {
 
   efetuarUpload(file: File, filename: string): any {
     const formData = new FormData();
-    formData.append('file', file[0], filename);
+    formData.append('file', file, filename);
     return this.http.post(`${this.baseURL}/upload`, formData);
   }
 }

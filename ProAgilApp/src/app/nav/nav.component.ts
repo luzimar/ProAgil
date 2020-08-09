@@ -10,7 +10,6 @@ import { User } from '../models/User';
 })
 export class NavComponent implements OnInit {
 
-  loggedUser: string;
 
   constructor(public authService: AuthService,
               private router: Router) { }
@@ -19,7 +18,6 @@ export class NavComponent implements OnInit {
   }
 
   loggedIn(): boolean {
-    this.loggedUser = this.authService.decodeToken?.unique_name;
     return this.authService.loggedIn();
   }
   logout(): void {
@@ -29,5 +27,8 @@ export class NavComponent implements OnInit {
 
   entrar(): void {
     this.router.navigate(['/users/login']);
+  }
+  getUsername(): string {
+    return sessionStorage.getItem('username');
   }
 }

@@ -10,7 +10,10 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { ToastrModule } from 'ngx-toastr';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { NgxMaskModule } from 'ngx-mask';
 import { JwtModule } from '@auth0/angular-jwt';
+import { NgxCurrencyModule } from 'ngx-currency';
 import { AuthInterceptor } from './auth/auth.interceptor';
 
 // Components
@@ -24,6 +27,7 @@ import { TituloComponent } from './shared/titulo/titulo.component';
 import { UsersComponent } from './users/users.component';
 import { LoginComponent } from './users/login/login.component';
 import { RegistrationComponent } from './users/registration/registration.component';
+import { EventoEditComponent } from './eventos/evento-edit/evento-edit.component';
 
 // Pipes
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
@@ -42,7 +46,8 @@ import { EventoService } from './services/evento.service';
       DateTimeFormatPipe,
       UsersComponent,
       LoginComponent,
-      RegistrationComponent
+      RegistrationComponent,
+      EventoEditComponent
    ],
    imports: [
       BrowserModule,
@@ -64,7 +69,10 @@ import { EventoService } from './services/evento.service';
         config: {
           tokenGetter: () => '',
         }
-      })
+      }),
+      TabsModule.forRoot(),
+      NgxMaskModule.forRoot(),
+      NgxCurrencyModule
    ],
    providers: [
      EventoService,

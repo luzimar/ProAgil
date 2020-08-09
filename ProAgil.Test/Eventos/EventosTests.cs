@@ -22,7 +22,16 @@ namespace ProAgil.Test.Eventos
             DefineInstances();
             var qtdPessoas = new QuantidadePessoas(15);
             var email = new Email("netcorecg@gmail.com");
-            var evento = new Evento(null,"Campo grande, MS", DateTime.Now.AddDays(20), ".NET Core", qtdPessoas, "img3.jpg", "6799999999", email);
+            var evento = new Evento(null,
+                                    "Campo grande, MS", 
+                                    DateTime.Now.AddDays(20), 
+                                    ".NET Core", 
+                                    qtdPessoas, 
+                                    "img3.jpg", 
+                                    "6799999999", 
+                                    email,
+                                    new List<Lote>(),
+                                    new List<RedeSocial>());
 
             //Act
             _repository.Add(evento);

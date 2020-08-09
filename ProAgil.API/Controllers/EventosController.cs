@@ -1,13 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProAgil.API.Controllers.Base;
 using ProAgil.Application.Interfaces;
 using ProAgil.Application.ViewModels;
+using ProAgil.Domain.Interfaces;
 
 namespace ProAgil.API.Controllers
 {
@@ -16,9 +17,13 @@ namespace ProAgil.API.Controllers
     public class EventosController : BaseController
     {
         private readonly IEventoService _service;
-        public EventosController(IEventoService service)
+        private readonly ILoteService _loteServices;
+        private readonly IRedeSocialService _redeSocialService;
+        public EventosController(IEventoService service, ILoteService loteService, IRedeSocialService redeSocialService)
         {
             _service = service;
+            _loteServices = loteService;
+            _redeSocialService = redeSocialService;
         }
 
         [HttpPost]
@@ -67,8 +72,12 @@ namespace ProAgil.API.Controllers
         {
             try
             {
+                
                 var eventoEncontrado = await _service.ObterEventoPorId(evento.Id, true);
                 if (eventoEncontrado == null) return NotFound();
+
+                await AtualizarLotes(evento, eventoEncontrado.Evento);
+                await AtualizarRedesSociais(evento, eventoEncontrado.Evento);
 
                 var response = await _service.EditarEvento(evento);
                  return GetResponse(response);
@@ -135,6 +144,36 @@ namespace ProAgil.API.Controllers
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, GetCustomMessageError500("buscar evento"));
+            }
+        }
+
+        private async Task AtualizarLotes(EventoViewModel eventoViewModel, EventoViewModel eventoBanco)
+        {
+            var idsLotes = eventoViewModel.Lotes.Select(lote => lote.Id);
+            if(idsLotes.Any())
+            {
+                var lotesRemovidos = eventoBanco.Lotes.Where(lote => !idsLotes.Contains(lote.Id)).ToArray();
+                if(lotesRemovidos.Any())
+                    await _loteServices.ExcluirLotes(lotesRemovidos);
+            } else {
+                var lotes = eventoBanco.Lotes.ToArray();
+                if(lotes.Any())
+                    await _loteServices.ExcluirLotes(lotes);
+            }
+        }
+
+        private async Task AtualizarRedesSociais(EventoViewModel eventoViewModel, EventoViewModel eventoBanco)
+        {
+            var idsRedesSociais = eventoViewModel.RedesSociais.Select(redeSocial => redeSocial.Id);
+            if(idsRedesSociais.Any())
+            {
+                var redesSociaisRemovidas = eventoBanco.RedesSociais.Where(redeSocial => !idsRedesSociais.Contains(redeSocial.Id)).ToArray();
+                if(redesSociaisRemovidas.Any())
+                    await _redeSocialService.ExcluirRedesSociais(redesSociaisRemovidas);
+            } else {
+                 var redesSociais = eventoBanco.RedesSociais.ToArray();
+                 if(redesSociais.Any())
+                    await _redeSocialService.ExcluirRedesSociais(redesSociais);
             }
         }
     }

@@ -29,7 +29,16 @@ namespace ProAgil.Domain.Commands
             var qtdPessoas = new QuantidadePessoas(command.QtdPessoas);
             var email = new Email(command.Email);
 
-            var evento = new Evento(null, command.Local, Convert.ToDateTime(command.DataEvento), command.Tema, qtdPessoas, command.ImagemUrl, command.Telefone, email);
+            var evento = new Evento(null, 
+                                    command.Local, 
+                                    Convert.ToDateTime(command.DataEvento), 
+                                    command.Tema, 
+                                    qtdPessoas, 
+                                    command.ImagemUrl, 
+                                    command.Telefone, 
+                                    email,
+                                    command.Lotes,
+                                    command.RedesSociais);
             if (evento.Valid)
             {
                 await _repository.Add(evento);
@@ -50,7 +59,16 @@ namespace ProAgil.Domain.Commands
             var qtdPessoas = new QuantidadePessoas(command.QtdPessoas);
             var email = new Email(command.Email);
 
-            var evento = new Evento(command.Id, command.Local, Convert.ToDateTime(command.DataEvento), command.Tema, qtdPessoas, command.ImagemUrl, command.Telefone, email);
+            var evento = new Evento(command.Id, 
+                                    command.Local, 
+                                    Convert.ToDateTime(command.DataEvento), 
+                                    command.Tema, 
+                                    qtdPessoas, 
+                                    command.ImagemUrl, 
+                                    command.Telefone, 
+                                    email,
+                                    command.Lotes,
+                                    command.RedesSociais);
             if (evento.Valid)
             {
                 _repository.Update(evento);
@@ -71,7 +89,16 @@ namespace ProAgil.Domain.Commands
             var qtdPessoas = new QuantidadePessoas(command.QtdPessoas);
             var email = new Email(command.Email);
 
-            var evento = new Evento(command.Id, command.Local, Convert.ToDateTime(command.DataEvento), command.Tema, qtdPessoas, command.ImagemUrl, command.Telefone, email);
+            var evento = new Evento(command.Id, 
+                                    command.Local, 
+                                    Convert.ToDateTime(command.DataEvento), 
+                                    command.Tema, 
+                                    qtdPessoas, 
+                                    command.ImagemUrl, 
+                                    command.Telefone, 
+                                    email,
+                                    command.Lotes,
+                                    command.RedesSociais);
             
             _repository.Delete(evento);
             if (await _repository.SaveChanges())

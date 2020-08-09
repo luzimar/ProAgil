@@ -1,6 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Constants } from '../utils/Constants';
 
 @Pipe({
   name: 'DateTimeFormatPipe'
@@ -8,7 +7,12 @@ import { Constants } from '../utils/Constants';
 export class DateTimeFormatPipe extends DatePipe implements PipeTransform {
 
   transform(value: Date, args?: any): any {
+
     try{
+
+      if (value === undefined){
+        return '';
+      }
       const formattedMonth = value.getMonth() < 12 ? value.getMonth() + 1 : value.getMonth();
       const day = value.getDate() < 10 ? '0' + value.getDate() : value.getDate();
       const month = value.getMonth() < 10 ? '0' + formattedMonth : formattedMonth;

@@ -33,6 +33,14 @@ namespace ProAgil.Test.FakeRepositories
             var index = GetIndexFromEntity(entity);
             _context.RemoveAt(index);
         }
+         public void DeleteRange(T[] entity)
+        {
+            foreach (var item in entity)
+            {
+                 var index = GetIndexFromEntity(item);
+                 _context.RemoveAt(index);
+            }
+        }
         public Task<T[]> Get()
         {
             return Task.FromResult(_context.ToArray());

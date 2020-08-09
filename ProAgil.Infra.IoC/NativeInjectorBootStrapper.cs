@@ -15,7 +15,11 @@ namespace ProAgil.Infra.IoC
         {
             services.AddScoped<IEventosRepository, EventosRepository>();
             services.AddScoped<IPalestrantesRepository, PalestrantesRepository>();
+            services.AddScoped<ILotesRepository, LotesRepository>();
+            services.AddScoped<IRedesSociaisRepository, RedesSociaisRepository>();
             services.AddScoped<IEventoService, EventoService>();
+            services.AddScoped<ILoteService, LoteService>();
+            services.AddScoped<IRedeSocialService, RedeSocialService>();
             services.AddScoped<IRequestHandler<CriarEventoCommand, CommandResponse>, EventoCommandHandler>();
             services.AddScoped<IRequestHandler<EditarEventoCommand, CommandResponse>, EventoCommandHandler>();
             services.AddScoped<IRequestHandler<ExcluirEventoCommand, CommandResponse>, EventoCommandHandler>();
