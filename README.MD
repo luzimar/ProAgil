@@ -1,1 +1,1 @@
-## Angular 7 With Asp Net Core 3.1
+## Angular 10 With Asp Net Core 3.1
