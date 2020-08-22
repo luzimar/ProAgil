@@ -5,15 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using ProAgil.API.Controllers.Base;
+using ProAgil.Application.Interfaces;
 using ProAgil.Application.ViewModels;
 using ProAgil.Domain.Identity;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProAgil.API.Controllers
@@ -23,22 +19,16 @@ namespace ProAgil.API.Controllers
 
     public class UsersController : BaseController
     {
-        private readonly IConfigurationRoot _config;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
-        public UsersController(IConfigurationRoot config, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper)
+        public UsersController(UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenService, IMapper mapper)
         {
-            _config = config;
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenService = tokenService;
             _mapper = mapper;
-        }
-
-        [HttpGet("getUser")]
-        public async Task<IActionResult> Get(UserViewModel userViewModel)
-        {
-            return Ok(userViewModel);
         }
 
         [HttpPost("register")]
@@ -65,13 +55,13 @@ namespace ProAgil.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(UserLoginViewModel userLoginViewModel)
+        public async Task<IActionResult> Login(UserLoginViewModel userLoginViewModel, [FromServices]IConfiguration configuration)
         {
             try
             {
                 var user = await _userManager.FindByNameAsync(userLoginViewModel.UserName);
 
-                if (user == null) return NotFound("Usuário não encontrado");
+                if (user == null) return NotFound("Usuário/Senha incorreto");
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, userLoginViewModel.Password, false);
 
@@ -79,9 +69,10 @@ namespace ProAgil.API.Controllers
                 {
                     var appUser = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == userLoginViewModel.UserName.ToUpper());
                     var userToReturn = _mapper.Map<UserLoginViewModel>(appUser);
+                    var token = await _tokenService.Generate(appUser, configuration.GetSection("AppSettings:Token").Value);
                     return Ok(new
                     {
-                        token = GenerateJWToken(appUser).Result,
+                        token,
                         user = userToReturn
                     });
                 }
@@ -92,39 +83,6 @@ namespace ProAgil.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Falha ao logar. Erro: {ex.Message}");
             }
-        }
-
-        private async Task<string> GenerateJWToken(User user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-
-            var roles = await _userManager.GetRolesAsync(user);
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:Token").Value));
-
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = credentials
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
         }
     }
 }

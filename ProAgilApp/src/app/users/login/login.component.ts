@@ -29,8 +29,8 @@ export class LoginComponent implements OnInit {
      () => {
        this.router.navigate(['/dashboard']);
      },
-     error => {
-       this.toastService.error('Erro ao logar!');
+     err => {
+       this.toastService.error(err.error);
      }
    );
   }

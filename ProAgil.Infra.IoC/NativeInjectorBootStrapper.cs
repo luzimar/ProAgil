@@ -20,6 +20,7 @@ namespace ProAgil.Infra.IoC
             services.AddScoped<IEventoService, EventoService>();
             services.AddScoped<ILoteService, LoteService>();
             services.AddScoped<IRedeSocialService, RedeSocialService>();
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRequestHandler<CriarEventoCommand, CommandResponse>, EventoCommandHandler>();
             services.AddScoped<IRequestHandler<EditarEventoCommand, CommandResponse>, EventoCommandHandler>();
             services.AddScoped<IRequestHandler<ExcluirEventoCommand, CommandResponse>, EventoCommandHandler>();

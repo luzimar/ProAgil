@@ -35,8 +35,6 @@ namespace ProAgil.API
         public void ConfigureServices(IServiceCollection services)
         {
             
-            services.AddSingleton((IConfigurationRoot)Configuration);
-
             services.AddDbContext<ProAgilContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddAutoMapper(cfg => cfg.AddProfile<AutoMapperProfiles>());
             services.AddMediatR(typeof(Startup));
