@@ -21,8 +21,8 @@ namespace ProAgil.API.Controllers
     {
         try
         {
-            await _palestrantesRepository.Add(palestrante);
-            if(await _palestrantesRepository.SaveChanges())
+            await _palestrantesRepository.Adicionar(palestrante);
+            if(await _palestrantesRepository.Commitar())
                 return Created($"/api/palestrantes/{palestrante.Id}", palestrante);
         }
         catch (System.Exception)
@@ -40,8 +40,8 @@ namespace ProAgil.API.Controllers
             var palestranteEncontrado = _palestrantesRepository.ObterPalestrantePorId(palestrante.Id);
             if(palestranteEncontrado == null) return NotFound();
 
-            _palestrantesRepository.Update(palestrante);
-            if(await _palestrantesRepository.SaveChanges())
+            _palestrantesRepository.Atualizar(palestrante);
+            if(await _palestrantesRepository.Commitar())
                 return Created($"/api/palestrantes/{palestrante.Id}", palestrante);
         }
         catch (System.Exception)
@@ -59,8 +59,8 @@ namespace ProAgil.API.Controllers
             var palestranteEncontrado = await _palestrantesRepository.ObterPalestrantePorId(palestranteId);
             if(palestranteEncontrado == null) return NotFound();
 
-            _palestrantesRepository.Delete(palestranteEncontrado);
-            if(await _palestrantesRepository.SaveChanges())
+            _palestrantesRepository.Excluir(palestranteEncontrado);
+            if(await _palestrantesRepository.Commitar())
                 return Ok();
         }
         catch (System.Exception)

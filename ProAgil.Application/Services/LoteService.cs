@@ -20,8 +20,8 @@ namespace ProAgil.Application.Services
         public async Task ExcluirLotes(LoteViewModel[] lotes)
         {
             var lotesMap = _mapper.Map<Lote[]>(lotes);
-            _lotesRepository.DeleteRange(lotesMap);
-            await _lotesRepository.SaveChanges();
+            _lotesRepository.ExcluirVarios(lotesMap);
+            await _lotesRepository.Commitar();
         }
   }
 }

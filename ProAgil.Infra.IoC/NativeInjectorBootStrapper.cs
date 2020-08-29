@@ -4,6 +4,7 @@ using ProAgil.Application.Interfaces;
 using ProAgil.Application.Services;
 using ProAgil.Domain.Commands;
 using ProAgil.Domain.Commands.Eventos;
+using ProAgil.Domain.Core.Interfaces;
 using ProAgil.Domain.Interfaces;
 using ProAgil.Infra.Data.Implementations;
 
@@ -13,6 +14,7 @@ namespace ProAgil.Infra.IoC
     {
         public static void RegisterServices(IServiceCollection services)
         {
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IEventosRepository, EventosRepository>();
             services.AddScoped<IPalestrantesRepository, PalestrantesRepository>();
             services.AddScoped<ILotesRepository, LotesRepository>();

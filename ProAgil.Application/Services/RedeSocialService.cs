@@ -20,8 +20,8 @@ namespace ProAgil.Application.Services
         public async Task ExcluirRedesSociais(RedeSocialViewModel[] redesSociais)
         {
             var redesSociaisMap = _mapper.Map<RedeSocial[]>(redesSociais);
-            _redesSociaisRepository.DeleteRange(redesSociaisMap);
-            await _redesSociaisRepository.SaveChanges();
+            _redesSociaisRepository.ExcluirVarias(redesSociaisMap);
+            await _redesSociaisRepository.Commitar();
         }
   }
 }

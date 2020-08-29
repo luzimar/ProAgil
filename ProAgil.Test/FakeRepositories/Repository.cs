@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProAgil.Test.FakeRepositories
 {
-    public abstract class Repository<T> : IRepository<T> where T : Entity
+    public class Repository<T> : IRepository<T> where T : Entity
     {
         protected readonly IList<T> _context;
 

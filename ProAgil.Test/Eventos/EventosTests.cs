@@ -12,8 +12,8 @@ namespace ProAgil.Test.Eventos
     public class EventosTests
     {
         private List<Evento> _eventos;
+        private Repository<Evento> _eventoRepository;
         private EventosFakeRepository _repository;
-
 
         [TestMethod]
         public void Should_be_able_to_create_an_event()
@@ -34,8 +34,8 @@ namespace ProAgil.Test.Eventos
                                     new List<RedeSocial>());
 
             //Act
-            _repository.Add(evento);
-            var salvouComSucesso = _repository.SaveChanges().Result;
+            _repository.Adicionar(evento);
+            var salvouComSucesso = _repository.Commitar().Result;
 
             //Assert
             evento.Id.Should().NotBe(0);
@@ -46,8 +46,9 @@ namespace ProAgil.Test.Eventos
 
         private void DefineInstances()
         {
-            _eventos = new List<Evento>();
-            _repository = new EventosFakeRepository(_eventos);
+            _eventos =  new List<Evento>();
+            _eventoRepository = new Repository<Evento>(_eventos);
+            _repository = new EventosFakeRepository(_eventoRepository, _eventos);
         }
     }
 }

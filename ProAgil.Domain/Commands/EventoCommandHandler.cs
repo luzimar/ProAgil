@@ -41,8 +41,8 @@ namespace ProAgil.Domain.Commands
                                     command.RedesSociais);
             if (evento.Valid)
             {
-                await _repository.Add(evento);
-                if (await _repository.SaveChanges())
+                await _repository.Adicionar(evento);
+                if (await _repository.Commitar())
                 {
                     Response.Success = true;
                     Response.Messages.Add("Evento criado com sucesso!");
@@ -71,8 +71,8 @@ namespace ProAgil.Domain.Commands
                                     command.RedesSociais);
             if (evento.Valid)
             {
-                _repository.Update(evento);
-                if (await _repository.SaveChanges())
+                _repository.Atualizar(evento);
+                if (await _repository.Commitar())
                 {
                     Response.Success = true;
                     Response.Messages.Add("Evento editado com sucesso!");
@@ -100,8 +100,8 @@ namespace ProAgil.Domain.Commands
                                     command.Lotes,
                                     command.RedesSociais);
             
-            _repository.Delete(evento);
-            if (await _repository.SaveChanges())
+            _repository.Excluir(evento);
+            if (await _repository.Commitar())
             {
                 Response.Success = true;
                 Response.Messages.Add("Evento excluído com sucesso!");

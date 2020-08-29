@@ -4,8 +4,9 @@ using ProAgil.Domain.Models;
 
 namespace ProAgil.Domain.Interfaces
 {
-    public interface ILotesRepository : IRepository<Lote>
+    public interface ILotesRepository
     {
-        
+        void ExcluirVarios(Lote[] entity);
+        Task<bool> Commitar();
     }
 }
