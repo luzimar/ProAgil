@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProAgil.API.Controllers.Base;
 using ProAgil.Application.Interfaces;
 using ProAgil.Application.ViewModels;
-using ProAgil.Domain.Interfaces;
 
 namespace ProAgil.API.Controllers
 {
@@ -41,25 +40,21 @@ namespace ProAgil.API.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> Upload()
+        public IActionResult Upload()
         {
             try
             {
-               var file = Request.Form.Files[0];
-               var folderName = Path.Combine("Resources", "Images");
-               var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-               if(file.Length > 0)
-               {
-                  var filename = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
-                  var fullPath = Path.Combine(pathToSave, filename.Replace("\"","")).Trim();
-                  using(var stream = new FileStream(fullPath, FileMode.Create))
-                  {
-                      file.CopyTo(stream);
-                  }
-               }
-
-               return Ok();
+                var file = Request.Form.Files[0];
+                var folderName = Path.Combine("Resources", "Images");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                if (file.Length > 0)
+                {
+                    var filename = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
+                    var fullPath = Path.Combine(pathToSave, filename.Replace("\"", "")).Trim();
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    file.CopyTo(stream);
+                }
+                return Ok();
             }
             catch (Exception)
             {
@@ -72,15 +67,14 @@ namespace ProAgil.API.Controllers
         {
             try
             {
-                
                 var eventoEncontrado = await _service.ObterEventoPorId(evento.Id, true);
                 if (eventoEncontrado == null) return NotFound();
-
-                await AtualizarLotes(evento, eventoEncontrado.Evento);
-                await AtualizarRedesSociais(evento, eventoEncontrado.Evento);
-
+                if (evento.Lotes != null)
+                    await AtualizarLotes(evento, eventoEncontrado.Evento);
+                if (evento.RedesSociais != null)
+                    await AtualizarRedesSociais(evento, eventoEncontrado.Evento);
                 var response = await _service.EditarEvento(evento);
-                 return GetResponse(response);
+                return GetResponse(response);
             }
             catch (Exception)
             {
@@ -95,7 +89,6 @@ namespace ProAgil.API.Controllers
             {
                 var eventoEncontrado = await _service.ObterEventoPorId(eventoId, true);
                 if (eventoEncontrado == null) return NotFound();
-
                 var response = await _service.ExcluirEvento(eventoEncontrado.Evento);
                 return GetResponse(response);
             }
@@ -150,14 +143,16 @@ namespace ProAgil.API.Controllers
         private async Task AtualizarLotes(EventoViewModel eventoViewModel, EventoViewModel eventoBanco)
         {
             var idsLotes = eventoViewModel.Lotes.Select(lote => lote.Id);
-            if(idsLotes.Any())
+            if (idsLotes.Any())
             {
                 var lotesRemovidos = eventoBanco.Lotes.Where(lote => !idsLotes.Contains(lote.Id)).ToArray();
-                if(lotesRemovidos.Any())
+                if (lotesRemovidos.Any())
                     await _loteServices.ExcluirLotes(lotesRemovidos);
-            } else {
+            }
+            else
+            {
                 var lotes = eventoBanco.Lotes.ToArray();
-                if(lotes.Any())
+                if (lotes.Any())
                     await _loteServices.ExcluirLotes(lotes);
             }
         }
@@ -165,14 +160,16 @@ namespace ProAgil.API.Controllers
         private async Task AtualizarRedesSociais(EventoViewModel eventoViewModel, EventoViewModel eventoBanco)
         {
             var idsRedesSociais = eventoViewModel.RedesSociais.Select(redeSocial => redeSocial.Id);
-            if(idsRedesSociais.Any())
+            if (idsRedesSociais.Any())
             {
                 var redesSociaisRemovidas = eventoBanco.RedesSociais.Where(redeSocial => !idsRedesSociais.Contains(redeSocial.Id)).ToArray();
-                if(redesSociaisRemovidas.Any())
+                if (redesSociaisRemovidas.Any())
                     await _redeSocialService.ExcluirRedesSociais(redesSociaisRemovidas);
-            } else {
-                 var redesSociais = eventoBanco.RedesSociais.ToArray();
-                 if(redesSociais.Any())
+            }
+            else
+            {
+                var redesSociais = eventoBanco.RedesSociais.ToArray();
+                if (redesSociais.Any())
                     await _redeSocialService.ExcluirRedesSociais(redesSociais);
             }
         }

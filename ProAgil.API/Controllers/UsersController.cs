@@ -60,11 +60,8 @@ namespace ProAgil.API.Controllers
             try
             {
                 var user = await _userManager.FindByNameAsync(userLoginViewModel.UserName);
-
                 if (user == null) return NotFound("Usuário/Senha incorreto");
-
                 var result = await _signInManager.CheckPasswordSignInAsync(user, userLoginViewModel.Password, false);
-
                 if (result.Succeeded)
                 {
                     var appUser = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == userLoginViewModel.UserName.ToUpper());
@@ -76,7 +73,6 @@ namespace ProAgil.API.Controllers
                         user = userToReturn
                     });
                 }
-
                 return Unauthorized();
             }
             catch (Exception ex)
