@@ -6,23 +6,15 @@ import { DatePipe } from '@angular/common';
 })
 export class DateTimeFormatPipe extends DatePipe implements PipeTransform {
 
-  transform(value: Date, args?: any): any {
-
-    try{
-
+  transform(value: any, args?: any): any {
       if (value === undefined){
         return '';
       }
-      const formattedMonth = value.getMonth() < 12 ? value.getMonth() + 1 : value.getMonth();
-      const day = value.getDate() < 10 ? '0' + value.getDate() : value.getDate();
-      const month = value.getMonth() < 10 ? '0' + formattedMonth : formattedMonth;
-      const year = value.getFullYear();
-      const hour = value.getHours() < 10 ? '0' + value.getHours() : value.getHours();
-      const minutes = value.getMinutes() < 10 ? '0' + value.getMinutes() : value.getMinutes();
-      return `${day}/${month}/${year} ${hour}:${minutes}`;
-    } catch {
-      return value.toString();
-    }
+      if(typeof value === 'string')
+        return value;
+      const options = { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" };
+      const teste = value.toLocaleDateString("pt-br", options);
+      return teste;
   }
 
 }
